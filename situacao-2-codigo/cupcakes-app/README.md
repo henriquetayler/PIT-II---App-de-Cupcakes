@@ -21,7 +21,7 @@ Loja virtual de cupcakes gourmet, desenvolvida a partir da especificação ágil
 4. **Já tinha o banco da versão anterior?** Rode também `sql/02_cupom.sql` antes de iniciar o sistema.
 
 ### 3. Configurar a conexão
-Em `src/main/resources/application.properties` confira `spring.datasource.url`. Usuário e senha vêm de variáveis de ambiente (padrão: usuário `root`, senha `root`; porta 3307 na URL; ajuste para o seu MySQL):
+Em `src/main/resources/application.properties` confira `spring.datasource.url`. Usuário e senha vêm de variáveis de ambiente (padrão: usuário `root`, senha `root`; porta 3306 na URL; ajuste para o seu MySQL):
 
 ```bash
 # Windows (PowerShell)
