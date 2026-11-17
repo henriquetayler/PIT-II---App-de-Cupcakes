@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeca('Meus pedidos')}"></head>
+<body>
+<header th:replace="~{fragments :: topo}"></header>
+<main>
+    <h1>Meus pedidos</h1>
+    <div th:replace="~{fragments :: mensagens}"></div>
+
+    <p th:if="${#lists.isEmpty(pedidos)}">Você ainda não fez nenhum pedido. <a th:href="@{/}">Ver a vitrine</a></p>
+
+    <article class="pedido" th:each="p : ${pedidos}">
+        <header>
+            <h3>Pedido #<span th:text="${p.id}">1</span></h3>
+            <span class="status" th:text="${p.status.rotulo}">Status</span>
+        </header>
+        <p>Feito em <span th:text="${#temporals.format(p.dataHora, 'dd/MM/yyyy HH:mm')}">data</span>
+            · Pagamento: <span th:text="${p.formaPagamento.rotulo}">forma</span>
+            <span th:if="${p.vencimentoBoleto != null}">
+                · Boleto vence em <span th:text="${#temporals.format(p.vencimentoBoleto, 'dd/MM/yyyy')}">data</span>
+            </span>
+        </p>
+        <ul>
+            <li th:each="i : ${p.itens}">
+                <span th:text="${i.quantidade}">1</span> x <span th:text="${i.cupcake.nome}">Nome</span>
+                — R$ <span th:text="${#numbers.formatDecimal(i.subtotal, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+            </li>
+        </ul>
+        <p>Entrega em: <span th:text="${p.enderecoEntrega}">endereço</span>
+            (prazo de <span th:text="${p.prazoEntregaDias}">2</span> dia(s))</p>
+        <p th:if="${p.desconto != null and p.desconto.signum() > 0}">Desconto
+            (cupom <span th:text="${p.cupom != null} ? ${p.cupom.codigo} : ''">CODIGO</span>):
+            − R$ <span th:text="${#numbers.formatDecimal(p.desconto, 1, 'POINT', 2, 'COMMA')}">0,00</span></p>
+        <p>Frete: R$ <span th:text="${#numbers.formatDecimal(p.frete, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+            · <strong>Total: R$ <span th:text="${#numbers.formatDecimal(p.total, 1, 'POINT', 2, 'COMMA')}">0,00</span></strong></p>
+    </article>
+</main>
+</body>
+</html>

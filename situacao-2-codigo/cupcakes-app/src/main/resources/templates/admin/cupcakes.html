@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeca('Admin - Produtos')}"></head>
+<body>
+<header th:replace="~{fragments :: topo}"></header>
+<main>
+    <h1>Gerenciar produtos e estoque</h1>
+    <div th:replace="~{fragments :: mensagens}"></div>
+
+    <p><a class="botao" th:href="@{/admin/cupcakes/novo}">+ Novo cupcake</a></p>
+
+    <table>
+        <thead>
+        <tr><th>Nome</th><th>Categorias</th><th>Preço</th><th>Estoque</th><th>Na vitrine?</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${cupcakes}">
+            <td th:text="${c.nome}">Nome</td>
+            <td><span class="tag" th:each="cat : ${c.categorias}" th:text="${cat.nome}"></span></td>
+            <td>R$ <span th:text="${#numbers.formatDecimal(c.preco, 1, 'POINT', 2, 'COMMA')}">0,00</span></td>
+            <td th:text="${c.estoque}">0</td>
+            <!-- HU-13 CA#1: estoque zerado oculta o produto -->
+            <td th:text="${c.disponivel} ? 'Sim' : 'Não (sem estoque)'">Sim</td>
+            <td>
+                <a th:href="@{/admin/cupcakes/{id}/editar(id=${c.id})}">Editar</a>
+                <form th:action="@{/admin/cupcakes/{id}/remover(id=${c.id})}" method="post" class="inline"
+                      onsubmit="return confirm('Remover este produto da vitrine?')">
+                    <button type="submit" class="perigo">Remover</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

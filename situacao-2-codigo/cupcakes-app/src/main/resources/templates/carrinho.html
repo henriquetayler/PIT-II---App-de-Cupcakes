@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeca('Carrinho')}"></head>
+<body>
+<header th:replace="~{fragments :: topo}"></header>
+<main>
+    <h1>Seu carrinho</h1>
+    <div th:replace="~{fragments :: mensagens}"></div>
+
+    <!-- HU-07 CA#2 -->
+    <p th:if="${#lists.isEmpty(itens)}">Seu carrinho está vazio. <a th:href="@{/}">Ver a vitrine</a></p>
+
+    <th:block th:if="${!#lists.isEmpty(itens)}">
+        <table>
+            <thead>
+            <tr><th>Produto</th><th>Preço</th><th>Quantidade</th><th>Subtotal</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${itens}">
+                <td th:text="${item.cupcake.nome}">Nome</td>
+                <td>R$ <span th:text="${#numbers.formatDecimal(item.cupcake.preco, 1, 'POINT', 2, 'COMMA')}">0,00</span></td>
+                <td>
+                    <form th:action="@{/carrinho/alterar}" method="post" class="inline">
+                        <input type="hidden" name="id" th:value="${item.cupcake.id}">
+                        <input type="number" name="quantidade" min="1" max="50" th:value="${item.quantidade}" class="qtd">
+                        <button type="submit">Atualizar</button>
+                    </form>
+                </td>
+                <td>R$ <span th:text="${#numbers.formatDecimal(item.subtotal, 1, 'POINT', 2, 'COMMA')}">0,00</span></td>
+                <td>
+                    <form th:action="@{/carrinho/remover}" method="post" class="inline">
+                        <input type="hidden" name="id" th:value="${item.cupcake.id}">
+                        <button type="submit" class="perigo" title="Remover item" aria-label="Remover item">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <section class="resumo">
+            <p>Subtotal: <strong>R$ <span th:text="${#numbers.formatDecimal(subtotal, 1, 'POINT', 2, 'COMMA')}">0,00</span></strong></p>
+
+            <!-- HU-11: cupom de desconto (um por pedido) -->
+            <div th:if="${cupom != null}" class="cupom-aplicado">
+                <p>Cupom <strong th:text="${cupom.codigo}">CODIGO</strong>
+                    (<span th:text="${cupom.percentual}">10</span>% off):
+                    <strong>− R$ <span th:text="${#numbers.formatDecimal(desconto, 1, 'POINT', 2, 'COMMA')}">0,00</span></strong>
+                </p>
+                <form th:action="@{/carrinho/cupom/remover}" method="post" class="inline">
+                    <button type="submit" class="link">Remover cupom</button>
+                </form>
+                <p>Subtotal com desconto: <strong>R$ <span th:text="${#numbers.formatDecimal(subtotalComDesconto, 1, 'POINT', 2, 'COMMA')}">0,00</span></strong></p>
+            </div>
+            <form th:if="${cupom == null}" th:action="@{/carrinho/cupom}" method="post" class="inline-form">
+                <label>Cupom de desconto
+                    <input type="text" name="codigo" placeholder="Ex.: BEMVINDO10" maxlength="30" required>
+                </label>
+                <button type="submit">Aplicar cupom</button>
+            </form>
+
+            <!-- HU-08: cálculo de frete -->
+            <form th:action="@{/carrinho/frete}" method="post" class="inline-form">
+                <label>CEP
+                    <input type="text" name="cep" th:value="${cep}" placeholder="38700-000" maxlength="9" required>
+                </label>
+                <button type="submit">Calcular frete</button>
+            </form>
+
+            <div th:if="${frete != null}">
+                <p>Frete:
+                    <strong th:if="${frete.valor.signum() == 0}">Grátis</strong>
+                    <strong th:if="${frete.valor.signum() != 0}">R$ <span th:text="${#numbers.formatDecimal(frete.valor, 1, 'POINT', 2, 'COMMA')}">0,00</span></strong>
+                    · prazo estimado: <span th:text="${frete.prazoDias}">2</span> dia(s)
+                </p>
+                <p>Total: <strong>R$ <span th:text="${#numbers.formatDecimal(totalComFrete, 1, 'POINT', 2, 'COMMA')}">0,00</span></strong></p>
+            </div>
+
+            <a class="botao" th:href="@{/checkout}">Finalizar pedido</a>
+        </section>
+    </th:block>
+</main>
+</body>
+</html>

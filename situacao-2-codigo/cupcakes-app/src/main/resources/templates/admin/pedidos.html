@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeca('Admin - Pedidos')}">
+</head>
+<body>
+<header th:replace="~{fragments :: topo}"></header>
+<main>
+    <h1>Pedidos recebidos</h1>
+    <div th:replace="~{fragments :: mensagens}"></div>
+    <!-- HU-14 RNF#1: atualiza sozinho a cada 60 segundos -->
+    <p class="aviso-texto">Esta página é atualizada automaticamente a cada 60 segundos.</p>
+
+    <p th:if="${#lists.isEmpty(pedidos)}">Nenhum pedido recebido ainda.</p>
+
+    <table th:if="${!#lists.isEmpty(pedidos)}">
+        <thead>
+        <tr><th>#</th><th>Data</th><th>Cliente</th><th>Itens</th><th>Pagamento</th><th>Total</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${pedidos}">
+            <td th:text="${p.id}">1</td>
+            <td th:text="${#temporals.format(p.dataHora, 'dd/MM/yyyy HH:mm')}">data</td>
+            <td><span th:text="${p.usuario.nome}">Cliente</span><br>
+                <small th:text="${p.enderecoEntrega}">endereço</small></td>
+            <td>
+                <div th:each="i : ${p.itens}">
+                    <span th:text="${i.quantidade}">1</span> x <span th:text="${i.cupcake.nome}">Nome</span>
+                </div>
+            </td>
+            <td th:text="${p.formaPagamento.rotulo}">forma</td>
+            <td>R$ <span th:text="${#numbers.formatDecimal(p.total, 1, 'POINT', 2, 'COMMA')}">0,00</span></td>
+            <td>
+                <form th:action="@{/admin/pedidos/{id}/status(id=${p.id})}" method="post" class="inline">
+                    <select name="status">
+                        <option th:each="s : ${statusPossiveis}" th:value="${s.name()}" th:text="${s.rotulo}"
+                                th:selected="${s == p.status}"></option>
+                    </select>
+                    <button type="submit">Salvar</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+<script>
+    setTimeout(function () { window.location.reload(); }, 60000);
+</script>
+</body>
+</html>

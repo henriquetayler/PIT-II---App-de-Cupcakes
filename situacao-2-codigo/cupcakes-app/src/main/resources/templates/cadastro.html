@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeca('Criar conta')}"></head>
+<body>
+<header th:replace="~{fragments :: topo}"></header>
+<main class="estreito">
+    <h1>Criar conta</h1>
+    <div th:replace="~{fragments :: mensagens}"></div>
+
+    <form th:action="@{/cadastro}" method="post" class="form">
+        <label>Nome
+            <input type="text" name="nome" th:value="${nome}" maxlength="100" required autofocus>
+        </label>
+        <label>E-mail
+            <input type="email" name="email" th:value="${email}" maxlength="150" required>
+        </label>
+        <label>Senha (mínimo 8 caracteres)
+            <input type="password" name="senha" minlength="8" required>
+        </label>
+        <button type="submit">Cadastrar</button>
+    </form>
+    <p>Já tem conta? <a th:href="@{/login}">Entrar</a></p>
+</main>
+</body>
+</html>

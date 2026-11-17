@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeca('Detalhes do produto')}"></head>
+<body>
+<header th:replace="~{fragments :: topo}"></header>
+<main>
+    <div th:replace="~{fragments :: mensagens}"></div>
+    <a th:href="@{/}">&larr; Voltar à vitrine</a>
+
+    <section class="detalhe">
+        <img th:if="${!#strings.isEmpty(cupcake.fotoUrl)}" th:src="${cupcake.fotoUrl}" th:alt="${cupcake.nome}">
+        <div class="sem-foto grande" th:if="${#strings.isEmpty(cupcake.fotoUrl)}">🧁</div>
+
+        <div>
+            <h1 th:text="${cupcake.nome}">Nome</h1>
+            <p th:text="${cupcake.descricao}">Descrição</p>
+            <p class="preco">R$ <span th:text="${#numbers.formatDecimal(cupcake.preco, 1, 'POINT', 2, 'COMMA')}">0,00</span></p>
+
+            <p>
+                <strong>Categorias:</strong>
+                <span class="tag" th:each="cat : ${cupcake.categorias}" th:text="${cat.nome}"></span>
+            </p>
+
+            <!-- HU-05 RN#1: alerta de alergênicos -->
+            <p class="alerta aviso" th:if="${!#strings.isEmpty(cupcake.alergenicos)}">
+                ⚠️ <strong>Contém / pode conter:</strong> <span th:text="${cupcake.alergenicos}"></span>
+            </p>
+
+            <!-- HU-05 CA#2: botão desabilitado se indisponível -->
+            <form th:action="@{/carrinho/adicionar}" method="post">
+                <input type="hidden" name="id" th:value="${cupcake.id}">
+                <button type="submit" th:disabled="${!cupcake.disponivel}">Adicionar ao carrinho</button>
+                <span th:if="${!cupcake.disponivel}" class="aviso-texto">Produto indisponível</span>
+            </form>
+        </div>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeca('Admin - Cupcake')}"></head>
+<body>
+<header th:replace="~{fragments :: topo}"></header>
+<main class="estreito">
+    <h1 th:text="${form.id == null} ? 'Novo cupcake' : 'Editar cupcake'">Cupcake</h1>
+    <div th:replace="~{fragments :: mensagens}"></div>
+
+    <form th:action="@{/admin/cupcakes}" method="post" th:object="${form}" class="form">
+        <input type="hidden" th:field="*{id}">
+
+        <label>Nome
+            <input type="text" th:field="*{nome}" maxlength="100" required>
+        </label>
+        <label>Descrição
+            <textarea th:field="*{descricao}" maxlength="500" rows="3" required></textarea>
+        </label>
+        <label>Preço (R$)
+            <input type="number" th:field="*{preco}" step="0.01" min="0.01" required>
+        </label>
+        <label>Estoque (unidades)
+            <input type="number" th:field="*{estoque}" min="0" required>
+        </label>
+        <label>URL da foto (opcional)
+            <input type="text" th:field="*{fotoUrl}" maxlength="500" placeholder="https://...">
+        </label>
+        <label>Alergênicos
+            <input type="text" th:field="*{alergenicos}" maxlength="200" placeholder="Leite, glúten, ovos">
+        </label>
+
+        <fieldset>
+            <legend>Categorias</legend>
+            <label class="opcao" th:each="cat : ${categorias}">
+                <input type="checkbox" name="categoriaIds" th:value="${cat.id}"
+                       th:checked="${form.categoriaIds.contains(cat.id)}">
+                <span th:text="${cat.nome}">Categoria</span>
+            </label>
+        </fieldset>
+
+        <button type="submit">Salvar</button>
+        <a th:href="@{/admin/cupcakes}">Cancelar</a>
+    </form>
+</main>
+</body>
+</html>

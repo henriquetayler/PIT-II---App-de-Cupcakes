@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="cabeca(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' · Cupcakes Gourmet'">Cupcakes Gourmet</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header th:fragment="topo" class="topo">
+    <a class="logo" th:href="@{/}">🧁 Cupcakes Gourmet</a>
+    <nav>
+        <a th:href="@{/}">Vitrine</a>
+        <a th:href="@{/carrinho}">Carrinho (<span th:text="${qtdCarrinho}">0</span>)</a>
+        <th:block th:if="${session.usuarioLogado != null}">
+            <a th:href="@{/pedidos}">Meus pedidos</a>
+            <a th:if="${session.usuarioLogado.admin}" th:href="@{/admin/cupcakes}">Admin: Produtos</a>
+            <a th:if="${session.usuarioLogado.admin}" th:href="@{/admin/pedidos}">Admin: Pedidos</a>
+            <form th:action="@{/logout}" method="post" class="inline">
+                <button type="submit" class="link">Sair (<span th:text="${session.usuarioLogado.nome}">usuário</span>)</button>
+            </form>
+        </th:block>
+        <th:block th:if="${session.usuarioLogado == null}">
+            <a th:href="@{/login}">Entrar</a>
+            <a th:href="@{/cadastro}">Cadastrar</a>
+        </th:block>
+    </nav>
+</header>
+
+<div th:fragment="mensagens">
+    <p class="alerta erro" th:if="${erro}" th:text="${erro}"></p>
+    <p class="alerta ok" th:if="${sucesso}" th:text="${sucesso}"></p>
+</div>
+
+</body>
+</html>

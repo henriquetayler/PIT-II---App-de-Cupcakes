@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeca('Vitrine')}"></head>
+<body>
+<header th:replace="~{fragments :: topo}"></header>
+<main>
+    <h1>Vitrine de cupcakes</h1>
+    <div th:replace="~{fragments :: mensagens}"></div>
+
+    <form method="get" th:action="@{/}" class="filtro">
+        <label>Categoria:
+            <select name="categoria" onchange="this.form.submit()">
+                <option value="">Todas</option>
+                <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nome}"
+                        th:selected="${c.id == categoriaSelecionada}"></option>
+            </select>
+        </label>
+        <noscript><button type="submit">Filtrar</button></noscript>
+    </form>
+
+    <p th:if="${#lists.isEmpty(cupcakes)}"
+       th:text="${categoriaSelecionada != null} ? 'Nenhum resultado encontrado' : 'Nenhum produto disponível no momento'"></p>
+
+    <div class="grid">
+        <article class="card" th:each="c : ${cupcakes}">
+            <a th:href="@{/cupcakes/{id}(id=${c.id})}">
+                <img th:if="${!#strings.isEmpty(c.fotoUrl)}" th:src="${c.fotoUrl}" th:alt="${c.nome}">
+                <div class="sem-foto" th:if="${#strings.isEmpty(c.fotoUrl)}">🧁</div>
+                <h3 th:text="${c.nome}">Nome</h3>
+            </a>
+            <p class="desc" th:text="${c.descricao}">Descrição</p>
+            <p class="preco">R$ <span th:text="${#numbers.formatDecimal(c.preco, 1, 'POINT', 2, 'COMMA')}">0,00</span></p>
+            <form th:action="@{/carrinho/adicionar}" method="post">
+                <input type="hidden" name="id" th:value="${c.id}">
+                <button type="submit">Adicionar ao carrinho</button>
+            </form>
+        </article>
+    </div>
+</main>
+</body>
+</html>

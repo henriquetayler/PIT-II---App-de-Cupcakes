@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeca('Finalizar pedido')}"></head>
+<body>
+<header th:replace="~{fragments :: topo}"></header>
+<main class="estreito">
+    <h1>Finalizar pedido</h1>
+    <div th:replace="~{fragments :: mensagens}"></div>
+
+    <h2>Resumo</h2>
+    <ul>
+        <li th:each="item : ${itens}">
+            <span th:text="${item.quantidade}">1</span> x <span th:text="${item.cupcake.nome}">Nome</span>
+            — R$ <span th:text="${#numbers.formatDecimal(item.subtotal, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+        </li>
+    </ul>
+    <p>Subtotal: <strong>R$ <span th:text="${#numbers.formatDecimal(subtotal, 1, 'POINT', 2, 'COMMA')}">0,00</span></strong>
+        (o frete é calculado pelo CEP ao confirmar)</p>
+    <p th:if="${cupom != null}">Cupom <strong th:text="${cupom.codigo}">CODIGO</strong>:
+        − R$ <span th:text="${#numbers.formatDecimal(desconto, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+        · Subtotal com desconto: <strong>R$ <span th:text="${#numbers.formatDecimal(subtotalComDesconto, 1, 'POINT', 2, 'COMMA')}">0,00</span></strong></p>
+
+    <form th:action="@{/checkout}" method="post" class="form">
+        <label>CEP
+            <input type="text" name="cep" th:value="${cep}" placeholder="38700-000" maxlength="9" required>
+        </label>
+        <label>Endereço de entrega
+            <input type="text" name="endereco" th:value="${endereco}" placeholder="Rua, número, bairro, cidade" maxlength="255" required>
+        </label>
+
+        <fieldset>
+            <legend>Forma de pagamento</legend>
+            <label class="opcao" th:each="f : ${formas}">
+                <input type="radio" name="formaPagamento" th:value="${f.name()}"
+                       th:checked="${formaSelecionada != null and formaSelecionada == f}" required>
+                <span th:text="${f.rotulo}">Forma</span>
+            </label>
+        </fieldset>
+
+        <button type="submit">Confirmar pedido</button>
+    </form>
+</main>
+</body>
+</html>
