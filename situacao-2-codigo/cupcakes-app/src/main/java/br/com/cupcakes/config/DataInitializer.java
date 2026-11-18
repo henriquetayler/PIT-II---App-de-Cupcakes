@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** Na primeira execução cria o administrador, as categorias e alguns cupcakes de exemplo. */
@@ -25,6 +26,15 @@ public class DataInitializer implements CommandLineRunner {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioService usuarioService;
     private final CategoriaRepository categoriaRepository;
+    /** Ilustrações originais em static/img/cupcakes, usadas quando o produto não tem foto. */
+    private static final Map<String, String> FOTOS_PADRAO = Map.of(
+            "Brigadeiro Belga", "/img/cupcakes/brigadeiro-belga.svg",
+            "Morango com Chantilly", "/img/cupcakes/morango-com-chantilly.svg",
+            "Limão Siciliano", "/img/cupcakes/limao-siciliano.svg",
+            "Baunilha Clássico", "/img/cupcakes/baunilha-classico.svg",
+            "Red Velvet", "/img/cupcakes/red-velvet.svg",
+            "Ninho com Nutella", "/img/cupcakes/ninho-com-nutella.svg");
+
     private final CupcakeRepository cupcakeRepository;
     private final CupomRepository cupomRepository;
     private final String adminEmail;
@@ -69,6 +79,15 @@ public class DataInitializer implements CommandLineRunner {
                         "11.00", 15, "Leite, glúten, ovos", Set.of(categorias.get(2), categorias.get(4)));
                 criar("Ninho com Nutella", "Massa branca, recheio de Nutella e cobertura de leite Ninho.",
                         "12.00", 18, "Leite, glúten, ovos, avelã", Set.of(categorias.get(0), categorias.get(4)));
+            }
+        }
+        // Fotos dos cupcakes de exemplo: preenche só quem ainda não tem foto
+        // (vale também para bancos já criados; não altera fotos definidas pelo admin)
+        for (Cupcake c : cupcakeRepository.findAll()) {
+            String foto = FOTOS_PADRAO.get(c.getNome());
+            if (foto != null && (c.getFotoUrl() == null || c.getFotoUrl().isBlank())) {
+                c.setFotoUrl(foto);
+                cupcakeRepository.save(c);
             }
         }
         // HU-11: cupons de exemplo (dois válidos e um vencido, para testar as duas mensagens)
